@@ -1,0 +1,19 @@
+{% extends 'student_base.html' %}
+
+{% block content %}   
+<h2>Messages</h2>
+
+<div class="chatbox">
+    {% for a in mess1 %}
+        <p dir=rtl><span class="light">{{ a.from_user }}</span><br><span>{{ a.message }}</span><br>       
+        <span class="light">{{ a.created_at }}</span></p> 
+    {% endfor %}
+</div>   
+<form id="login-form" class="form" action="" method="post">
+    {% csrf_token %}      
+    {{ msg_form1.as_p }}
+    <input  type="submit" name="submit" id="submit" class="btn btn-info btn-md" value="send">   
+</form>
+          
+{% endblock %}  
+   
