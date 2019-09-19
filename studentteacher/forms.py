@@ -225,7 +225,7 @@ class ReviewAssignmentForm(forms.ModelForm):
 
     class Meta:
         model = Review
-        fields = ('review_stars',)
+        fields = ('review_stars','review_assignment')
 
 
 

@@ -6,6 +6,8 @@
         <table id=table1 border=1>
         <tr>
         <th width="150">From</th>
+        <th width="150">Assignment</th>
+
         <th width="150">Reviews</th>
 
         </tr>
@@ -13,6 +15,7 @@
         {% for tea_review in get_review %}
         <tr>
         <td>{{ tea_review.review_teacher}}</td>
+        <td>{{ tea_review.review_assignment}}</td>
         <td>{{ tea_review.review_stars }}</td>
         </tr>
         {% endfor %}

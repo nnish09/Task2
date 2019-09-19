@@ -52,7 +52,7 @@ class Submission(models.Model):
     sub_title=models.CharField(max_length=300)
     submitted_at = models.DateTimeField(default=datetime.now(), blank=True)
     def __str__(self):
-        return self.title
+        return self.sub_title
 
 
 class AssignRequest(models.Model):

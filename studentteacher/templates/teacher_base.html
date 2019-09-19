@@ -175,11 +175,10 @@ h1{
   <div class="topnav-right">
     {% if user.is_authenticated %}
     <a href="">{{ user.username }}!</a>
-    <a href="{% url 'teacher_dashboard' %}">Home</a>
-    <a href="{% url 'signup' %}">Register</a>  
+    <a href="{% url 'dashboard' %}">Home</a>
     <a href="{% url 'logout' %}">logout</a>
     {% else %}   
-    <a href="{% url 'teacher_dashboard' %}">Home</a>
+    <a href="{% url 'dashboard' %}">Home</a>
     <a href="{% url 'signup' %}">Register</a>  
     <a href="{% url 'login_user' %}">login</a>
     {% endif %}
@@ -187,11 +186,10 @@ h1{
 </div>
 <div class="w3-sidebar w3-light-grey w3-bar-block" style="width:20%;height:100%">
     <h3 class="w3-bar-item">Menu</h3>
-    <a href="{% url 'profile' %}" class="w3-bar-item w3-button">Profile</a>
-    <a href="{% url 'change_password' %}" class="w3-bar-item w3-button">Change Password</a>
+    <a href="{% url 'user_profile' %}" class="w3-bar-item w3-button">Profile</a>
     <a href="{% url 'signup1' %}" class="w3-bar-item w3-button">Add Student</a>
     <a href="{% url 'get_students' %}" class="w3-bar-item w3-button">Student</a>
-    <a href="{% url 'viewfriends' user.id %}" class="w3-bar-item w3-button">View Friends</a>
+    <a href="{% url 'viewfriends' request.user.id %}" class="w3-bar-item w3-button">View Friends</a>
     <a href="{% url 'request_list' %}" class="w3-bar-item w3-button">Friend Requests</a>
     <a href="{% url 'get_assign_requests' %}" class="w3-bar-item w3-button">Assignment Requests</a>
     <a href="{% url 'get_submitted_assignments' %}" class="w3-bar-item w3-button">Submitted Assignments</a>
