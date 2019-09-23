@@ -51,9 +51,9 @@ class Submission(models.Model):
     submitted_assignment = models.FileField(upload_to='documents/',null=True,validators=[validate_file_extension1])
     sub_title=models.CharField(max_length=300)
     submitted_at = models.DateTimeField(default=datetime.now(), blank=True)
+    
     def __str__(self):
         return self.sub_title
-
 
 class AssignRequest(models.Model):
   req_student = models.ForeignKey(User, on_delete=models.CASCADE,null=True, related_name='req_student')
@@ -62,23 +62,23 @@ class AssignRequest(models.Model):
 
 
 class Review(models.Model):
-  REVIEW_TYPE_CHOICES = (
-      ('1 star', '1 star'),
-      ('1.5 star', '1.5 star'),
-      ('2 star', '2 star'),
-      ('2.5 star', '2.5 star'),
-      ('3 star', '3 star'),
-      ('3.5 star', '3.5 star'),
-      ('4 star', '4 star'),
-      ('4.5 star', '4.5 star'),
-      ('5 star', '5 star'),
-    )
-  review_student = models.ForeignKey(User, on_delete=models.CASCADE,null=True, related_name='review_student')
-  review_teacher = models.ForeignKey(User, on_delete=models.CASCADE,null=True, related_name='review_teacher')
-  review_assignment=models.ForeignKey(Submission,on_delete=models.CASCADE,null=True)
-  review_stars=models.CharField(choices=REVIEW_TYPE_CHOICES,default='3 star',max_length=20)
-  def __str__(self):
-      return self.review_student
+    REVIEW_TYPE_CHOICES = (
+        ('1 star', '1 star'),
+        ('1.5 star', '1.5 star'),
+        ('2 star', '2 star'),
+        ('2.5 star', '2.5 star'),
+        ('3 star', '3 star'),
+        ('3.5 star', '3.5 star'),
+        ('4 star', '4 star'),
+        ('4.5 star', '4.5 star'),
+        ('5 star', '5 star'),
+      )
+    review_student = models.ForeignKey(User, on_delete=models.CASCADE,null=True, related_name='review_student')
+    review_teacher = models.ForeignKey(User, on_delete=models.CASCADE,null=True, related_name='review_teacher')
+    review_assignment=models.ForeignKey(Submission,on_delete=models.CASCADE,null=True)
+    review_stars=models.CharField(choices=REVIEW_TYPE_CHOICES,default='3 star',max_length=20)
+    def __str__(self):
+        return self.review_student
 
 
 class Message(models.Model):

@@ -22,6 +22,8 @@ from django.conf import settings
 from friendship.exceptions import AlreadyExistsError,AlreadyFriendsError
 from django.views import View
 from django.db.models import Q
+from datetime import datetime,timedelta   
+from django.utils import timezone
 
 
 
@@ -312,24 +314,32 @@ def assignment(request,stu_id):
                 assign.teacher=request.user   
                 assign.save() 
                 return HttpResponseRedirect(reverse('assign_added'))
+
         else:
             assign_form = AssignmentForm()
         return render(request, 'assignment_form.html', {'assign_form': assign_form })
     else:
         return HttpResponse('you are not authenticated to access this page')
 
+
+
 @login_required
-def submit_assignment(request,stu_id):
+def submit_assignment(request,stu_id,assign_id):
     if request.user.role is 1:
         if request.method == 'POST':
             submit_assign_form = SubmitAssignmentForm(request.POST, request.FILES) 
-            if  submit_assign_form.is_valid():                  
-                submit_assign=submit_assign_form.save() 
-                submit_assign.sub_student=request.user 
-                submit_assign.sub_teacher=User.objects.get(pk=stu_id) 
-                submit_assign.save()  
-                return HttpResponseRedirect(reverse('assign_submitted'))
-            
+            if  submit_assign_form.is_valid():     
+                a=Assignment.objects.get(id=assign_id)   
+                b=a.submission_date
+                if b > timezone.now():      
+                    submit_assign=submit_assign_form.save() 
+                    submit_assign.sub_student=request.user 
+                    submit_assign.sub_teacher=User.objects.get(pk=stu_id) 
+                    submit_assign.tea_assignment=Assignment.objects.get(id=assign_id) 
+                    submit_assign.save()  
+                    return HttpResponseRedirect(reverse('assign_submitted'))
+                else:
+                    return HttpResponse('submission date is over')
         else:
             submit_assign_form = SubmitAssignmentForm()
         return render(request, 'submit_assignment.html', {'submit_assign_form': submit_assign_form })
@@ -525,7 +535,7 @@ def get_assignments(request):
 
 @login_required
 def assign_submitted(request):
-    if request.user.role is 1:
+    if request.user.role is 1:    
         return render(request, 'assignment_submitted.html')
     else:
         return HttpResponse('you are not authenticated to access this page')
@@ -594,24 +604,29 @@ def get_reviews(request):
 @login_required
 def message_post(request,user_id):
     if request.user.role is 2:
-        if request.method == 'POST':
-            msg_form = MessageForm(request.POST)
-            
-            if  msg_form.is_valid():
-                message_form=msg_form.save() 
-                message_form.to_user=User.objects.get(pk=user_id)  
-                message_form.from_user=request.user   
-                message_form.save()  
-                return HttpResponseRedirect(reverse('message_post',args=(user_id,)))
-            
-        else:
-            msg_form = MessageForm()
-            query = Q(Q(from_user=request.user)&Q(to_user=user_id))|Q(Q(to_user=request.user)&Q(from_user=user_id))
-            mess = Message.objects.filter(query)
-        return render(request, 'messages.html', {
-            'msg_form': msg_form,'mess':mess
-        })
+        user = get_object_or_404(user_model, pk=user_id)
+        friends = Friend.objects.friends(user)
+        if friends: 
+            if request.method == 'POST':
 
+                msg_form = MessageForm(request.POST)
+                
+                if  msg_form.is_valid():
+                    message_form=msg_form.save() 
+                    message_form.to_user=User.objects.get(pk=user_id)  
+                    message_form.from_user=request.user   
+                    message_form.save()  
+                    return HttpResponseRedirect(reverse('message_post',args=(user_id,)))
+                
+            else:
+                msg_form = MessageForm()
+                query = Q(Q(from_user=request.user)&Q(to_user=user_id))|Q(Q(to_user=request.user)&Q(from_user=user_id))
+                mess = Message.objects.filter(query)
+            return render(request, 'messages.html', {
+                'msg_form': msg_form,'mess':mess
+            })
+        else:
+            return HttpResponse('you are not friends')
     else:
         return HttpResponse('you are not authenticated to access this page')
 
@@ -619,24 +634,28 @@ def message_post(request,user_id):
 @login_required
 def message_post_student(request,user_id):
     if request.user.role is 1:
-        if request.method == 'POST':
-            msg_form1 = MessageForm(request.POST)
-            
-            if  msg_form1.is_valid():
-                message_form1=msg_form1.save() 
-                message_form1.to_user=User.objects.get(pk=user_id)  
-                message_form1.from_user=request.user   
-                message_form1.save()  
-                return HttpResponseRedirect(reverse('message_post_student',args=(user_id,)))
-            
+        user = get_object_or_404(user_model, pk=user_id)
+        friends = Friend.objects.friends(user)
+        if friends: 
+            if request.method == 'POST':
+                msg_form1 = MessageForm(request.POST)
+                
+                if  msg_form1.is_valid():
+                    message_form1=msg_form1.save() 
+                    message_form1.to_user=User.objects.get(pk=user_id)  
+                    message_form1.from_user=request.user   
+                    message_form1.save()  
+                    return HttpResponseRedirect(reverse('message_post_student',args=(user_id,)))
+                
+            else:
+                msg_form1 = MessageForm()
+                query = Q(Q(from_user=request.user)&Q(to_user=user_id))|Q(Q(to_user=request.user)&Q(from_user=user_id))
+                mess1 = Message.objects.filter(query)
+            return render(request, 'mess_form.html', {
+                'msg_form1': msg_form1,'mess1':mess1
+            })
         else:
-            msg_form1 = MessageForm()
-            query = Q(Q(from_user=request.user)&Q(to_user=user_id))|Q(Q(to_user=request.user)&Q(from_user=user_id))
-            mess1 = Message.objects.filter(query)
-        return render(request, 'mess_form.html', {
-            'msg_form1': msg_form1,'mess1':mess1
-        })
-
+            return HttpResponse('you are not friends')
     else:
         return HttpResponse('you are not authenticated to access this page')
 

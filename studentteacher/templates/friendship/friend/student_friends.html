@@ -12,13 +12,14 @@
 
     </tr>
     {% for b in friends %} 
-    <tr>
+    <tr id="trreq">
     <td>{% get_by_name friendship_context_object_name as var %}
         {{ b.username }}</td>
-    <td><form method="post" action="{% url 'request_assign' b.id %}">
+    <td><form method="post" id="reqform" action="{% url 'request_assign' b.id %}">
         {% csrf_token %}
         <input type="hidden" name="requested" value=True />
-        <input type="submit" value="Request Assignment" />
+        <input type="submit" id="reqassign"  value="Request Assignment" />
+   
         </form>
     </td>
     <td><a href="{% url 'message_post_student' b.id %}"><button type="button" class="button">Chat</button></a>

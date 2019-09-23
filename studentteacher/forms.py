@@ -96,6 +96,7 @@ class SetPasswordForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super(SetPasswordForm, self).clean()
         password = cleaned_data.get('password')
+        confirm_password = cleaned_data.get('confirm_password')
 
         # check for min length
         min_length = 8
@@ -107,16 +108,9 @@ class SetPasswordForm(forms.ModelForm):
         if sum(c.isdigit() for c in password) < 1:
             msg = 'Password must contain at least 1 number.'
             self.add_error('password', msg)
-
-       
-
-        password_confirm = cleaned_data.get('password_confirm')
-
-
-        if password and password_confirm:
-            if password != password_confirm:
-                msg = "The two password fields must match."
-                self.add_error('password_confirm', msg)
+        
+        if password != confirm_password:
+            raise forms.ValidationError('The passwords does not match.')
         return cleaned_data
 
 
@@ -193,14 +187,7 @@ class SubmitAssignmentForm(forms.ModelForm):
         model = Submission
         fields = ('submitted_assignment','sub_title')
 
-    def clean_submitted_at(self):
-        submitted_at = self.cleaned_data['submitted_at']
-        a=Assignment.objects.filter()
-        if submitted_at < datetime.date.now():
-            raise forms.ValidationError('No past Date')
-        return submitted_at
-
-        
+         
 
 class RequestForm(forms.ModelForm):
     requested=forms.BooleanField(initial=True)
